@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -203,6 +204,17 @@ fun HomeScreen(
                                 ) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.rounded_ios_share_24),
+                                        contentDescription = ""
+                                    )
+                                }
+                                IconButton(
+                                    onClick = {
+                                        quoteViewModel.getDailyQuotes()
+                                    },
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Refresh,
                                         contentDescription = ""
                                     )
                                 }

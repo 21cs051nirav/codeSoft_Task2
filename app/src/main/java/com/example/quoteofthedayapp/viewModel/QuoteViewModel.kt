@@ -22,7 +22,7 @@ class QuoteViewModel(private val quoteRepository: QuoteRepository):ViewModel() {
     init {
         getDailyQuotes()
     }
-     private fun getDailyQuotes(){
+      fun getDailyQuotes(){
         viewModelScope.launch {
           try {
               val response=quoteRepository.getRandomDailyQuote()
@@ -65,7 +65,9 @@ class QuoteViewModel(private val quoteRepository: QuoteRepository):ViewModel() {
     fun removeFromFavourite(quote: QuoteData){
         viewModelScope.launch {
             quoteRepository.removeFavouriteQuote(quote)
+            quoteRepository.getFavouriteQuotes()
         }
+
     }
 
     fun deleteAllFavourite(){

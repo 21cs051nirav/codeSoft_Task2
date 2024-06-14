@@ -82,7 +82,7 @@ fun BottomNavigationItem(
         Icon(
             imageVector = screen.icon,
             contentDescription = screen.title,
-            tint = if (currentDestination.hierarchy.any { it.route==screen.route }) Color(0xff31304d) else Color.Gray,
+            tint = if (currentDestination.hierarchy.any { it.route==screen.route }) MaterialTheme.colorScheme.onPrimary else Color.Gray,
         )
     }
 }
