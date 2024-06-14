@@ -1,6 +1,5 @@
 package com.example.quoteofthedayapp.screen
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,32 +8,24 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -47,18 +38,15 @@ import com.example.quoteofthedayapp.component.AutoResizeText
 import com.example.quoteofthedayapp.component.SelectCard
 import com.example.quoteofthedayapp.data.QuoteData
 import com.example.quoteofthedayapp.utils.HomeScreenState
-import com.example.quoteofthedayapp.utils.captureComposableAsBitmap
-import com.example.quoteofthedayapp.utils.saveBitmapToFile
-import com.example.quoteofthedayapp.utils.shareImage
+import com.example.quoteofthedayapp.utils.shareText
 import com.example.quoteofthedayapp.viewModel.QuoteViewModel
 
 @Composable
 fun HomeScreen(
     quoteViewModel: QuoteViewModel,
-    context: Context
 ) {
     val homeScreenState by quoteViewModel.homeScreenState.collectAsState(initial = HomeScreenState.Loading)
-
+     val context= LocalContext.current
     when (homeScreenState) {
         is HomeScreenState.Loading -> {
             Box(
@@ -80,10 +68,10 @@ fun HomeScreen(
         }
 
         else -> {
-            var add by remember {
-                mutableStateOf(false)
-            }
+            val alreadyInDB by quoteViewModel.isInDB.collectAsState()
+
             val quote = (homeScreenState as HomeScreenState.Success).quote ?: QuoteData(
+                id = "",
                 "No", "--",
                 emptyList()
             )
@@ -156,10 +144,7 @@ fun HomeScreen(
                             verticalArrangement = Arrangement.SpaceAround,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            val card = @Composable {
-                                Column (
-                                    modifier = Modifier.fillMaxWidth().weight(3f)
-                                ){
+
                                     AutoResizeText(
                                         text = "\"" + quote.content + "\"",
                                         style = TextStyle(
@@ -183,8 +168,8 @@ fun HomeScreen(
                                         modifier = Modifier.weight(1f),
                                         textAlign = TextAlign.Center
                                     )
-                                }
-                            }
+
+
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -192,12 +177,16 @@ fun HomeScreen(
                             ) {
                                 IconButton(
                                     onClick = {
-                                        add = !add
+                                        quoteViewModel.change()
+                                        if(!alreadyInDB){
                                         quoteViewModel.addToFavouriteList(quote)
+                                        }else{
+                                            quoteViewModel.removeFromFavourite(quote)
+                                        }
                                     },
                                     modifier = Modifier.weight(1f)
                                 ) {
-                                    if (add) Icon(
+                                    if (alreadyInDB) Icon(
                                         imageVector = Icons.Outlined.Favorite,
                                         contentDescription = ""
                                     )
@@ -208,13 +197,7 @@ fun HomeScreen(
                                 }
                                 IconButton(
                                     onClick = {
-                                        val bitmap =
-                                            captureComposableAsBitmap(
-                                                context = context,
-                                                composable = card
-                                            )
-                                        val uri = saveBitmapToFile(context, bitmap, "Shard_Card")
-                                        shareImage(context, uri)
+                                        shareText(context,"\"${quote.content}\" by ${quote.author}")
                                     },
                                     modifier = Modifier.weight(1f)
                                 ) {

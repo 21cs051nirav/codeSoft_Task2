@@ -15,7 +15,11 @@ interface QuoteDao {
     @Query("select * from favorite_quote")
     suspend fun getAllQuote():List<QuoteEntity>
 
+    @Query("select count(*) from favorite_quote where id==:id")
+    suspend fun findInDB(id:String):Int
 
-
-
+    @Query("delete from favorite_quote where id==:id")
+    suspend fun removeFromDB(id: String)
+    @Query("delete from favorite_quote")
+    suspend fun deleteAllQuote()
 }

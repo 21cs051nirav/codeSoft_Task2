@@ -19,25 +19,27 @@ class QuoteRepository(private  val apiServices: QuoteApiServices, private val qu
         suspend fun getFavouriteQuotes():List<QuoteData>{
             return mapToQuoteData(quoteDao.getAllQuote())
         }
-
+        suspend fun isInLocalDB(id:String):Boolean{
+            return quoteDao.findInDB(id)!=0
+        }
         suspend fun addFavouriteQuote(quote: QuoteData){
             quoteDao.insert(mapToQuoteEntity( quote))
         }
 //
-//        suspend fun removeFavouriteQuote(quote: QuoteData){
-//            try {
-//                quoteDao.deleteQuote(quote)
-//            }catch (e:Exception){
-//                Log.d("QuoteRepository", "removeFavouriteQuote: ${e.message}")
-//            }
-//        }
-//        suspend fun deleteAllFavouriteQuote(){
-//            try {
-//                quoteDao.deleteAllQuote()
-//            }catch (e:Exception){
-//                Log.d("QuoteRepository", "deleteAllFavouriteQuote: ${e.message}")
-//            }
-//        }
+        suspend fun removeFavouriteQuote(quote: QuoteData){
+            try {
+                quoteDao.removeFromDB(quote.id)
+            }catch (e:Exception){
+                Log.d("QuoteRepository", "removeFavouriteQuote: ${e.message}")
+            }
+        }
+        suspend fun deleteAllFavouriteQuote(){
+            try {
+                quoteDao.deleteAllQuote()
+            }catch (e:Exception){
+                Log.d("QuoteRepository", "deleteAllFavouriteQuote: ${e.message}")
+            }
+        }
 }
 
 //class QuoteViewModelFactory(private val repository: QuoteRepository) : ViewModelProvider.Factory {

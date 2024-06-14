@@ -24,7 +24,7 @@ fun NavigationHost(
         navController = navController
     ){
         composable(BottomBarScreen.Home.route.toString()){
-            HomeScreen(quoteViewModel =quoteViewModel,context )
+            HomeScreen(quoteViewModel =quoteViewModel )
         }
         composable(BottomBarScreen.History.route.toString()){
             FavoriteQuoteScreen(navController = navController, quoteViewModel =quoteViewModel )

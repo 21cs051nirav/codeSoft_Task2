@@ -1,13 +1,21 @@
 package com.example.quoteofthedayapp.utils
 
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Bitmap
 import android.view.View
+import android.view.ViewGroup
+import android.view.ViewTreeObserver
+import android.widget.FrameLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.platform.ComposeView
 
-fun captureComposableAsBitmap(context: Context, composable: @Composable () -> Unit): Bitmap {
+fun captureComposableAsBitmap(
+    context: Context,
+    composable: @Composable () -> Unit,
+    onBitmapCaptured: (Bitmap) -> Unit
+) {
     val composeView = ComposeView(context).apply {
         setContent {
             composable()
@@ -19,14 +27,13 @@ fun captureComposableAsBitmap(context: Context, composable: @Composable () -> Un
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
     )
     composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
-
+    // Create bitmap and canvas
     val bitmap = Bitmap.createBitmap(
-        composeView.width,
-        composeView.height,
+        composeView.measuredWidth,
+        composeView.measuredHeight,
         Bitmap.Config.ARGB_8888
     )
-    val canvas = android.graphics.Canvas(bitmap)
-    composeView.draw(canvas)
+    // Dismiss the dialog and pass the bitmap
+    onBitmapCaptured(bitmap)
 
-    return bitmap
 }
